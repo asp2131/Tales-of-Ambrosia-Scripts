@@ -16,7 +16,7 @@ public class CharacterAnimator : MonoBehaviour
 
     float speedPercent;
 
-    // protected CharacterCombat combat;
+    protected CharacterCombat combat;
     protected AnimatorOverrideController overrideController;
 
     // Start is called before the first frame update
@@ -24,11 +24,12 @@ public class CharacterAnimator : MonoBehaviour
     {
         agent = GetComponent<PlayerMovement>();
         jump = GetComponent<PlayerJump>();
+        combat = GetComponent<CharacterCombat>();
         overrideController = new AnimatorOverrideController(animator.runtimeAnimatorController);
         animator.runtimeAnimatorController = overrideController;
 
         currentAnimationClips = defaultAnimationClips;
-        // combat.OnAttack += OnAttack;
+        combat.OnAttack += OnAttack;
     }
 
     // Update is called once per frame
@@ -37,37 +38,57 @@ public class CharacterAnimator : MonoBehaviour
         //trigger jump animation when player is in the air
         if (jump.groundPlayer == false && jump.playerVelocity.y > 0)
         {
-            JumpAnimation();
+            JumpAnimation(jump.groundPlayer);
+        }
+        if (jump.groundPlayer == true)
+        {
+            animator.SetBool("Jumping", !jump.groundPlayer);
+        }
+
+        //if k key is pressed, trigger the attack animation
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            SlingShotAnimation();
         }
 
         animator.SetFloat("Speed", agent.speed, locomationAnimationSmoothTime, Time.deltaTime);
     }
 
-    public void JumpAnimation()
+    public void JumpAnimation(bool isJumping)
     {
-        animator.SetTrigger("Jump");
-        animator.SetBool("Grounded", true);
+        animator.SetBool("Jumping", !isJumping);
+        // animator.SetBool("Grounded", true);
 
         // animator.SetBool("Grounded", true);
+    }
+
+    void SlingShotAnimation()
+    {
+        // animator.SetBool("InCombat", true);
+        print(combat.InCombat);
+        animator.Play("magic");
     }
 
     protected virtual void OnAttack()
     {
         print("OnAttack");
+        // animator.SetBool("InCombat", combat.InCombat);
         // animator.SetTrigger("Attack");
+        animator.Play("magic");
 
-        // int attackIndex = Random.Range(0, currentAnimationClips.Length);
-        // // overrideController[replaceableAnimations.name] = currentAnimationClips[attackIndex];
-        // //loop through all the replaceable animations
-        // for (int i = 0; i < replaceableAnimations.Length; i++)
-        // {
-        //     //if the current replaceable animation is the same as the one we are looking for
-        //     if (replaceableAnimations[i].name == currentAnimationClips[attackIndex].name)
+        //     int attackIndex = Random.Range(0, currentAnimationClips.Length);
+        //     // overrideController[replaceableAnimations.name] = currentAnimationClips[attackIndex];
+        //     //loop through all the replaceable animations
+        //     for (int i = 0; i < replaceableAnimations.Length; i++)
         //     {
-        //         //set the override controller to the current animation clip
-        //         overrideController[replaceableAnimations[i].name] = currentAnimationClips[
-        //             attackIndex
-        //         ];
+        //         //if the current replaceable animation is the same as the one we are looking for
+        //         if (replaceableAnimations[i].name == currentAnimationClips[attackIndex].name)
+        //         {
+        //             //set the override controller to the current animation clip
+        //             overrideController[replaceableAnimations[i].name] = currentAnimationClips[
+        //                 attackIndex
+        //             ];
+        //         }
         //     }
         // }
     }

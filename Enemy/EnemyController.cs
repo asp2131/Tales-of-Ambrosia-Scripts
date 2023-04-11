@@ -10,11 +10,17 @@ public class EnemyController : MonoBehaviour
 
     public float baseOffset = 0.1f; // Set a base offset of 0.5 units
 
+    public float minDistance = 5f;
+    public float maxDistance = 10f;
+    public float speed = 2f;
+    private bool isMoving = true;
+
     Transform target;
     NavMeshAgent agent;
     CharacterCombat combat;
 
     public Animator animator;
+    private CharacterController controller;
 
     // Start is called before the first frame update
     void Start()
@@ -22,16 +28,41 @@ public class EnemyController : MonoBehaviour
         target = PlayerManager.instance.player.transform;
         agent = GetComponent<NavMeshAgent>();
         combat = GetComponent<CharacterCombat>();
+        controller = GetComponent<CharacterController>();
         // agent.baseOffset = baseOffset;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!agent.pathPending && agent.remainingDistance < 1.5f)
+        animator.SetBool("InCombat", combat.InCombat);
+        if (isMoving && combat.InCombat == false)
         {
-            Vector3 randomPosition = RandomNavMeshLocation(10f);
-            agent.SetDestination(randomPosition);
+            animator.SetFloat("Speed", 0.5f);
+            // Move the enemy in a random direction
+            Vector3 randomDirection =
+                Random.insideUnitSphere * Random.Range(minDistance, maxDistance);
+            randomDirection += transform.position;
+            NavMeshHit hit;
+            NavMesh.SamplePosition(randomDirection, out hit, maxDistance, 1);
+            Vector3 finalPosition = hit.position;
+
+            // Set the enemy's destination and move towards it with controller
+            controller.SimpleMove((finalPosition - transform.position).normalized * speed);
+            //rotate the enemy to the direction of its movement
+            transform.rotation = Quaternion.LookRotation(
+                controller.velocity.normalized,
+                Vector3.up
+            );
+
+            // Set isMoving to false
+            isMoving = false;
+        }
+        else
+        {
+            // Wait for a random amount of time before moving again
+            float randomTimer = Random.Range(2f, 5f);
+            StartCoroutine(WaitAndMove(randomTimer));
         }
 
         float distance = Vector3.Distance(target.position, transform.position);
@@ -44,20 +75,20 @@ public class EnemyController : MonoBehaviour
             //create a vector thats close to the target but not on it
             Vector3 attackPosition = target.position + target.forward * 1.5f;
             //move the enemy to the attack position
-            agent.SetDestination(attackPosition);
+            // agent.SetDestination(attackPosition);
             // FaceTarget();
             //
             FaceTarget();
 
-            if (distance <= 5.5 && distance >= 4)
+            if (distance <= 2)
             {
-                animator.SetBool("Run Forward", false);
+                animator.SetFloat("Speed", 0);
 
                 // Stop moving
-                agent.SetDestination(transform.position);
+                // agent.SetDestination(transform.position);
 
                 // Stop moving
-                animator.SetTrigger("Attack 01");
+                animator.SetTrigger("Attack");
                 CharacterStats targetStats = target.GetComponent<CharacterStats>();
                 combat.Attack(targetStats);
 
@@ -68,27 +99,10 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    Vector3 RandomNavMeshLocation(float radius)
+    IEnumerator WaitAndMove(float waitTime)
     {
-        animator.SetBool("Walk Forward", true);
-        //procedural walk movement for the enemy
-        Vector3 randomDirection = Random.insideUnitSphere * radius;
-        Vector3 randomPosition = transform.position + randomDirection;
-        NavMeshHit hit;
-        if (NavMesh.SamplePosition(randomPosition, out hit, radius, NavMesh.AllAreas))
-        {
-            return hit.position;
-        }
-        else
-        {
-            return transform.position;
-        }
-
-        // Vector3 randomDirection = Random.insideUnitSphere * radius;
-        // randomDirection += transform.position;
-        // NavMeshHit hit;
-        // NavMesh.SamplePosition(randomDirection, out hit, radius, 1);
-        // return hit.position;
+        yield return new WaitForSeconds(waitTime);
+        isMoving = true;
     }
 
     void FaceTarget()

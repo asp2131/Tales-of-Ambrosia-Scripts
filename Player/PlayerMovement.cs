@@ -7,8 +7,8 @@ using UnityEngine.EventSystems;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public delegate void OnFocusChanged(Interactable newFocus);
-    public OnFocusChanged onFocusChangedCallback;
+    // public delegate void OnFocusChanged(Interactable newFocus);
+    // public OnFocusChanged onFocusChangedCallback;
 
     public PlayerInput playerInput;
 
@@ -24,6 +24,8 @@ public class PlayerMovement : MonoBehaviour
     public LayerMask interactionMask; // Everything we can interact with
 
     public float velocity = 0f;
+
+    Transform target;
 
     Camera cam; // Reference to our camera
 
@@ -41,6 +43,7 @@ public class PlayerMovement : MonoBehaviour
         playerInput = GetComponent<PlayerInput>();
         controller = GetComponent<CharacterController>();
         _EffectFootstep = Resources.Load<GameObject>("Prefabs/Effect/EffectFootstep");
+        playerInput.actions["Move"].performed += ctx => OnMove();
     }
 
     // Update is called once per frame
@@ -48,6 +51,41 @@ public class PlayerMovement : MonoBehaviour
     {
         RotatePlayer();
         RotateCamera();
+        OnMove();
+
+        if (Input.GetMouseButtonDown(0) || Input.touchCount > 0)
+        {
+            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit, 100))
+            {
+                // Debug.Log("We hit " + hit.collider.name + " " + hit.point);
+                // Move our player to what we hit with our character controller
+
+                //Check to see if we click an interactable
+                Interactable interactable = hit.collider.GetComponent<Interactable>();
+                if (interactable != null)
+                {
+                    SetFocus(interactable);
+                }
+            }
+        }
+        //if target is out of range, stop following
+        if (target != null && Vector3.Distance(transform.position, target.position) > 8f)
+        {
+            target = null;
+        }
+        if (target != null)
+        {
+            // move to the target
+            //attack the target
+            FaceTarget();
+        }
+    }
+
+    void OnMove()
+    {
         Vector2 input = playerInput.actions["Move"].ReadValue<Vector2>();
         Vector3 move = new Vector3(input.x, 0, input.y);
         move = move.x * cam.transform.right + move.z * cam.transform.forward;
@@ -72,6 +110,44 @@ public class PlayerMovement : MonoBehaviour
         }
 
         controller.Move(move * speed * Time.deltaTime);
+    }
+
+    void MoveToTarget(Vector3 point)
+    {
+        //if using joystick, move player to point that will increase speed
+        controller.Move(point * speed * Time.deltaTime);
+    }
+
+    void FaceTarget()
+    {
+        Vector3 direction = (target.position - transform.position).normalized;
+        Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
+        transform.rotation = Quaternion.Slerp(
+            transform.rotation,
+            lookRotation,
+            Time.deltaTime * 5f
+        );
+    }
+
+    public void FollowTarget(Interactable newTarget)
+    {
+        target = newTarget.transform;
+        //        target = newTarget.interactionTransform;
+    }
+
+    void SetFocus(Interactable newFocus)
+    {
+        if (focus != newFocus)
+        {
+            if (focus != null)
+                focus.OnDefocused();
+
+            focus = newFocus;
+            // motor.StopFollowingTarget();
+        }
+        focus = newFocus;
+        newFocus.OnFocused(transform);
+        FollowTarget(newFocus);
     }
 
     private void FootstepEffect()
