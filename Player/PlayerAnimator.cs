@@ -25,10 +25,25 @@ public class PlayerAnimator : CharacterAnimator
         }
     }
 
-    protected override void OnAttack()
+    protected override void OnMagicAttack()
     {
-        base.OnAttack();
+        base.OnMagicAttack();
         animator.SetTrigger("Attack");
+        int attackIndex = Random.Range(0, currentAnimationClips.Length);
+        // loop through all the replaceable animations
+        for (int i = 0; i < replaceableAnimations.Length; i++)
+        {
+            // if the current replaceable animation is the same as the one we are looking for
+
+            // set the override controller to the current animation clip
+            overrideController[replaceableAnimations[i].name] = currentAnimationClips[attackIndex];
+        }
+    }
+
+    protected override void OnSwordAttack()
+    {
+        base.OnSwordAttack();
+        // animator.SetTrigger("hammer");
         int attackIndex = Random.Range(0, currentAnimationClips.Length);
         // loop through all the replaceable animations
         for (int i = 0; i < replaceableAnimations.Length; i++)
@@ -53,6 +68,11 @@ public class PlayerAnimator : CharacterAnimator
         {
             currentAnimationClips = defaultAnimationClips;
         }
+    }
+
+    public void Hit(AnimationEvent animationEvent)
+    {
+        // do something here, like play a sound or spawn a particle effect
     }
 
     [System.Serializable]

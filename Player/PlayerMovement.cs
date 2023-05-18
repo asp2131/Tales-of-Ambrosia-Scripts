@@ -43,7 +43,7 @@ public class PlayerMovement : MonoBehaviour
         playerInput = GetComponent<PlayerInput>();
         controller = GetComponent<CharacterController>();
         _EffectFootstep = Resources.Load<GameObject>("Prefabs/Effect/EffectFootstep");
-        playerInput.actions["Move"].performed += ctx => OnMove();
+        // playerInput.actions["Move"].performed += ctx => OnMove();
     }
 
     // Update is called once per frame
@@ -55,12 +55,27 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0) || Input.touchCount > 0)
         {
-            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+            Ray ray;
+            //if android or ios
+            if (
+                Application.platform == RuntimePlatform.Android
+                || Application.platform == RuntimePlatform.IPhonePlayer
+            )
+            {
+                if (EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId))
+                {
+                    return;
+                }
+                ray = cam.ScreenPointToRay(Input.touches[0].position);
+            }
+            else
+            {
+                ray = cam.ScreenPointToRay(Input.mousePosition);
+            }
             RaycastHit hit;
 
             if (Physics.Raycast(ray, out hit, 100))
             {
-                // Debug.Log("We hit " + hit.collider.name + " " + hit.point);
                 // Move our player to what we hit with our character controller
 
                 //Check to see if we click an interactable

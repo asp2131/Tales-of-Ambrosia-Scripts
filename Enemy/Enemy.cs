@@ -11,6 +11,7 @@ public class Enemy : Interactable
     {
         playerManager = PlayerManager.instance;
         myStats = GetComponent<CharacterStats>();
+        // _playerInput.actions["Fire"].performed += ctx => Interact();
     }
 
     // Start is called before the first frame update

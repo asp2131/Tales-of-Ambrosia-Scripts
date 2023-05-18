@@ -89,13 +89,31 @@ public class EquipmentManager : MonoBehaviour
                 RightHand.transform.position,
                 RightHand.transform.rotation
             );
+
+            //Give the weapon a mesh collider set to convex and trigger
+            MeshCollider meshCollider = newGameObject.AddComponent<MeshCollider>();
+            meshCollider.convex = true;
+            meshCollider.isTrigger = true;
+
+            //add the rigidbody
+            Rigidbody rigidbody = newGameObject.AddComponent<Rigidbody>();
+            rigidbody.isKinematic = true;
+            rigidbody.useGravity = false;
+
+            //also add the sword script
+            newGameObject.AddComponent<Sword>();
+
             newGameObject.SetActive(true);
             //place the new item in the player's righthand
             newGameObject.transform.parent = RightHand.transform;
             //set the new item's position to the player's righthand
             newGameObject.transform.localPosition = Vector3.zero;
+
+            //adjust angle of weapon
+            newGameObject.transform.localRotation = Quaternion.Euler(0, 180, 0);
             //set scale to 1
-            newGameObject.transform.localScale = Vector3.one;
+            newGameObject.transform.localScale = new Vector3(0.65f, 0.65f, 0.65f);
+            // newGameObject.transform.localScale = Vector3.zero;
         }
     }
 

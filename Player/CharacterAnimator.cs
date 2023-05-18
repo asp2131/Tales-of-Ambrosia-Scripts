@@ -29,7 +29,8 @@ public class CharacterAnimator : MonoBehaviour
         animator.runtimeAnimatorController = overrideController;
 
         currentAnimationClips = defaultAnimationClips;
-        combat.OnAttack += OnAttack;
+        combat.OnMagicAttack += OnMagicAttack;
+        combat.OnSwordAttack += OnSwordAttack;
     }
 
     // Update is called once per frame
@@ -38,12 +39,12 @@ public class CharacterAnimator : MonoBehaviour
         //trigger jump animation when player is in the air
         if (jump.groundPlayer == false && jump.playerVelocity.y > 0)
         {
-            JumpAnimation(jump.groundPlayer);
+            animator.Play("boy_jump_default");
         }
-        if (jump.groundPlayer == true)
-        {
-            animator.SetBool("Jumping", !jump.groundPlayer);
-        }
+        // if (jump.groundPlayer == true)
+        // {
+        //     animator.SetBool("Jumping", !jump.groundPlayer);
+        // }
 
         //if k key is pressed, trigger the attack animation
         if (Input.GetKeyDown(KeyCode.K))
@@ -69,27 +70,31 @@ public class CharacterAnimator : MonoBehaviour
         animator.Play("magic");
     }
 
-    protected virtual void OnAttack()
+    protected virtual void OnMagicAttack()
     {
-        print("OnAttack");
-        // animator.SetBool("InCombat", combat.InCombat);
-        // animator.SetTrigger("Attack");
-        animator.Play("magic");
+        animator.SetTrigger("magic");
+    }
 
-        //     int attackIndex = Random.Range(0, currentAnimationClips.Length);
-        //     // overrideController[replaceableAnimations.name] = currentAnimationClips[attackIndex];
-        //     //loop through all the replaceable animations
-        //     for (int i = 0; i < replaceableAnimations.Length; i++)
-        //     {
-        //         //if the current replaceable animation is the same as the one we are looking for
-        //         if (replaceableAnimations[i].name == currentAnimationClips[attackIndex].name)
-        //         {
-        //             //set the override controller to the current animation clip
-        //             overrideController[replaceableAnimations[i].name] = currentAnimationClips[
-        //                 attackIndex
-        //             ];
-        //         }
-        //     }
-        // }
+    protected virtual void OnSwordAttack()
+    {
+        animator.SetTrigger("hammer");
     }
 }
+
+
+//This was in OnMagicAttack() in CharacterCombat.cs
+//     int attackIndex = Random.Range(0, currentAnimationClips.Length);
+//     // overrideController[replaceableAnimations.name] = currentAnimationClips[attackIndex];
+//     //loop through all the replaceable animations
+//     for (int i = 0; i < replaceableAnimations.Length; i++)
+//     {
+//         //if the current replaceable animation is the same as the one we are looking for
+//         if (replaceableAnimations[i].name == currentAnimationClips[attackIndex].name)
+//         {
+//             //set the override controller to the current animation clip
+//             overrideController[replaceableAnimations[i].name] = currentAnimationClips[
+//                 attackIndex
+//             ];
+//         }
+//     }
+// }

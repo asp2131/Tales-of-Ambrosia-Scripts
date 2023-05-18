@@ -4,10 +4,18 @@ using UnityEngine;
 
 public class PlayerStats : CharacterStats
 {
+    public int experience;
+
     // Start is called before the first frame update
     void Start()
     {
         EquipmentManager.instance.onEquipmentChanged += OnEquipmentChanged;
+    }
+
+    public void GainExperience(int amount)
+    {
+        //increase experience by amount
+        experience += amount;
     }
 
     // Update is called once per frame

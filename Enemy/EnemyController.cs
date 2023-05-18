@@ -3,108 +3,60 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
+/* Controls the Enemy AI */
+
 public class EnemyController : MonoBehaviour
 {
-    public float lookRadius = 10f;
-    const float locomationAnimationSmoothTime = 0.1f;
+    public float lookRadius = 10f; // Detection range for player
 
-    public float baseOffset = 0.1f; // Set a base offset of 0.5 units
+    Transform target; // Reference to the player
+    public NavMeshAgent agent; // Reference to the NavMeshAgent
 
-    public float minDistance = 5f;
-    public float maxDistance = 10f;
-    public float speed = 2f;
-    private bool isMoving = true;
-
-    Transform target;
-    NavMeshAgent agent;
-    CharacterCombat combat;
-
-    public Animator animator;
     private CharacterController controller;
 
-    // Start is called before the first frame update
+    EnemyCombat combat;
+
+    // Use this for initialization
     void Start()
     {
         target = PlayerManager.instance.player.transform;
         agent = GetComponent<NavMeshAgent>();
-        combat = GetComponent<CharacterCombat>();
+        combat = GetComponent<EnemyCombat>();
         controller = GetComponent<CharacterController>();
-        // agent.baseOffset = baseOffset;
     }
 
     // Update is called once per frame
     void Update()
     {
-        animator.SetBool("InCombat", combat.InCombat);
-        if (isMoving && combat.InCombat == false)
-        {
-            animator.SetFloat("Speed", 0.5f);
-            // Move the enemy in a random direction
-            Vector3 randomDirection =
-                Random.insideUnitSphere * Random.Range(minDistance, maxDistance);
-            randomDirection += transform.position;
-            NavMeshHit hit;
-            NavMesh.SamplePosition(randomDirection, out hit, maxDistance, 1);
-            Vector3 finalPosition = hit.position;
-
-            // Set the enemy's destination and move towards it with controller
-            controller.SimpleMove((finalPosition - transform.position).normalized * speed);
-            //rotate the enemy to the direction of its movement
-            transform.rotation = Quaternion.LookRotation(
-                controller.velocity.normalized,
-                Vector3.up
-            );
-
-            // Set isMoving to false
-            isMoving = false;
-        }
-        else
-        {
-            // Wait for a random amount of time before moving again
-            float randomTimer = Random.Range(2f, 5f);
-            StartCoroutine(WaitAndMove(randomTimer));
-        }
-
+        // Distance to the target
         float distance = Vector3.Distance(target.position, transform.position);
-
+        // If inside the lookRadius
         if (distance <= lookRadius)
         {
-            animator.SetBool("Walk Forward", false);
-            animator.SetBool("Run Forward", true);
+            FaceTarget(); // Make sure to face towards the target
 
-            //create a vector thats close to the target but not on it
-            Vector3 attackPosition = target.position + target.forward * 1.5f;
-            //move the enemy to the attack position
-            // agent.SetDestination(attackPosition);
-            // FaceTarget();
-            //
-            FaceTarget();
+            // Move towards the target with character controller
+            agent.SetDestination(target.position);
 
-            if (distance <= 2)
+            // If agent is moving update controller to match
+            if (agent.velocity.magnitude > 0)
             {
-                animator.SetFloat("Speed", 0);
+                controller.Move(agent.velocity * Time.deltaTime);
+            }
 
-                // Stop moving
-                // agent.SetDestination(transform.position);
-
-                // Stop moving
-                animator.SetTrigger("Attack");
+            // If within attacking distance
+            if (distance <= agent.stoppingDistance)
+            {
                 CharacterStats targetStats = target.GetComponent<CharacterStats>();
-                combat.Attack(targetStats);
-
-                // Attack the target
-                if (targetStats != null) { }
-                // Attack the target
+                if (targetStats != null)
+                {
+                    combat.Attack(targetStats);
+                }
             }
         }
     }
 
-    IEnumerator WaitAndMove(float waitTime)
-    {
-        yield return new WaitForSeconds(waitTime);
-        isMoving = true;
-    }
-
+    // Rotate to face the target
     void FaceTarget()
     {
         Vector3 direction = (target.position - transform.position).normalized;
@@ -116,7 +68,8 @@ public class EnemyController : MonoBehaviour
         );
     }
 
-    private void OnDrawGizmosSelected()
+    // Show the lookRadius in editor
+    void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, lookRadius);

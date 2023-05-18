@@ -44,6 +44,9 @@ public class CameraController : MonoBehaviour
             currentYaw += yawSpeed * Time.deltaTime;
         }
 
+        //rotate camera with swipe
+
+
         //pinch to zoom
 
 

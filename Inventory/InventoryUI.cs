@@ -7,9 +7,8 @@ public class InventoryUI : MonoBehaviour
 {
     public Transform itemsParent;
     public GameObject inventoryUI;
-    public GameObject leftMobileStickUI;
 
-    public GameObject rightMobileStickUI;
+    public GameObject controllerUI;
 
     Inventory inventory;
 
@@ -22,16 +21,8 @@ public class InventoryUI : MonoBehaviour
 
         slots = itemsParent.GetComponentsInChildren<InventorySlot>();
         //if inventory is open, close it
-        if (inventoryUI.activeSelf)
-        {
-            inventoryUI.SetActive(false);
-        }
 
-        //if not on android, disable the right mobile stick
-        if (Application.platform != RuntimePlatform.Android)
-        {
-            rightMobileStickUI.SetActive(false);
-        }
+        inventoryUI.SetActive(false);
     }
 
     void Update()
@@ -39,32 +30,17 @@ public class InventoryUI : MonoBehaviour
         ToggleInventory();
         if (inventoryUI.activeSelf)
         {
-            leftMobileStickUI.SetActive(false);
-            rightMobileStickUI.SetActive(false);
+            controllerUI.SetActive(false);
         }
         else
         {
-            leftMobileStickUI.SetActive(true);
-            // rightMobileStickUI.SetActive(true);
-        }
-        if (Application.platform == RuntimePlatform.Android)
-        {
-            if (inventoryUI.activeSelf)
-            {
-                leftMobileStickUI.SetActive(false);
-                rightMobileStickUI.SetActive(false);
-            }
-            else
-            {
-                leftMobileStickUI.SetActive(true);
-                rightMobileStickUI.SetActive(true);
-            }
+            controllerUI.SetActive(true);
         }
     }
 
     public void ToggleInventory()
     {
-        if (Input.GetButtonDown("Inventory"))
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
             inventoryUI.SetActive(!inventoryUI.activeSelf);
         }

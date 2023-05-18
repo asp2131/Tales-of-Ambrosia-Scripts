@@ -49,7 +49,7 @@ public class PlayerJump : MonoBehaviour
         _characterController.Move(playerVelocity * Time.deltaTime);
     }
 
-    void OnJump()
+    public void OnJump()
     {
         if (groundPlayer)
         {

@@ -22,8 +22,10 @@ public class HealthUI : MonoBehaviour
     {
         foreach (Canvas canvas in FindObjectsOfType<Canvas>())
         {
+            print("1");
             if (canvas.renderMode == RenderMode.WorldSpace)
             {
+                print("2");
                 ui = Instantiate(uiPrefab, canvas.transform).transform;
                 healthSlider = ui.GetChild(0).GetComponent<Image>();
                 ui.gameObject.SetActive(false);
