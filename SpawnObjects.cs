@@ -4,7 +4,8 @@ using UnityEngine;
 public class SpawnObjects : MonoBehaviour
 {
     [Tooltip("The prefab to spawn.")]
-    public GameObject prefab;
+    //import list of prefabs
+    public GameObject[] prefabs;
 
     [Tooltip("The minimum number of copies to spawn.")]
     public int minCount = 50;
@@ -20,11 +21,21 @@ public class SpawnObjects : MonoBehaviour
         // Generate a random number of copies to spawn.
         int count = Random.Range(minCount, maxCount);
 
-        // Spawn the copies within the specified range.
+        // Spawn the copies of the prefabs in list of prefabs.
         for (int i = 0; i < count; i++)
         {
-            Vector3 spawnPosition = transform.position + new Vector3(Random.Range(-spawnRange.x, spawnRange.x), Random.Range(-spawnRange.y, spawnRange.y), Random.Range(-spawnRange.z, spawnRange.z));
-            Instantiate(prefab, spawnPosition, Quaternion.identity);
+            // Generate a random position to spawn the copy at.
+            Vector3 position = transform.position;
+            position.x += Random.Range(-spawnRange.x, spawnRange.x);
+            position.y += Random.Range(-spawnRange.y, spawnRange.y);
+            position.z += Random.Range(-spawnRange.z, spawnRange.z);
+
+            // Generate a random rotation to spawn the copy with.
+            Quaternion rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
+
+            // Spawn the copy.
+            //Instantiate(prefab, position, rotation);
+            Instantiate(prefabs[Random.Range(0, prefabs.Length)], position, rotation);
         }
     }
 }

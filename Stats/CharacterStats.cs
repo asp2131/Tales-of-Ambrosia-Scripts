@@ -2,24 +2,63 @@ using UnityEngine;
 
 public class CharacterStats : MonoBehaviour
 {
-    public int maxHealth = 100;
-    public int currentHealth { get; private set; }
+    public float maxHealth = 100f;
+    public float currentHealth;
+
+    public float regenerationDelay = 7f;
+    public float regenerationRate = 10f;
     public Stat damage;
     public Stat armor;
 
-    public event System.Action<int, int> OnHealthChanged;
+    float lastDamageTime;
+
+    public event System.Action<float, float> OnHealthChanged;
+
+    private float timeSinceLastChange;
 
     private void Awake()
     {
         currentHealth = maxHealth;
     }
 
-    private void Update()
+    // void Start()
+    // {
+    //     lastDamageTime = Time.time;
+    // }
+
+    void Update()
     {
-        if (Input.GetKeyDown(KeyCode.T))
+        //if health hasn't changed in 7 seconds, then regenerate health
+        if (Time.time - lastDamageTime > regenerationDelay)
         {
-            TakeDamage(10);
+            RegenerateHealth();
         }
+
+        //if k is pressed
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            //take 10 damage
+            Heal(10f);
+        }
+    }
+
+    public void Heal(float amount)
+    {
+        print("Healing");
+        //increase health by amount
+        currentHealth += amount;
+        //if current health is greater than max health
+        if (currentHealth > maxHealth)
+        {
+            //set current health to max health
+            currentHealth = maxHealth;
+        }
+    }
+
+    public void RegenerateHealth()
+    {
+        currentHealth += regenerationRate * Time.deltaTime;
+        currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
     }
 
     public virtual void TakeDamage(int damage)

@@ -36,7 +36,7 @@ public class HealthUI : MonoBehaviour
         GetComponent<CharacterStats>().OnHealthChanged += OnHealthChanged;
     }
 
-    void OnHealthChanged(int maxHealth, int currentHealth)
+    void OnHealthChanged(float maxHealth, float currentHealth)
     {
         if (ui != null)
         {

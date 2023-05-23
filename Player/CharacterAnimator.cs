@@ -79,6 +79,11 @@ public class CharacterAnimator : MonoBehaviour
     {
         animator.SetTrigger("hammer");
     }
+
+    public void OnLevelUp()
+    {
+        animator.SetTrigger("LevelUp");
+    }
 }
 
 

@@ -109,10 +109,28 @@ public class PlayerMovement : MonoBehaviour
         //if moving increase speed
         if (move != Vector3.zero)
         {
-            speed += 5f;
-            if (speed > 5f)
+            //if platform is android or ios
+            if (
+                Application.platform == RuntimePlatform.Android
+                || Application.platform == RuntimePlatform.IPhonePlayer
+            )
             {
-                speed = 5f;
+                //if joystick is not being used, return
+                speed += 3f;
+                if (speed > 3f)
+                {
+                    speed = 3f;
+                }
+            }
+            else
+            {
+                speed += 5f;
+
+                speed += 5f;
+                if (speed > 5f)
+                {
+                    speed = 5f;
+                }
             }
         }
         else
