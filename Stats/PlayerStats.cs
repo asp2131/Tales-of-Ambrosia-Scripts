@@ -14,6 +14,8 @@ public class PlayerStats : CharacterStats
 
     public GameObject levelUpUI;
 
+    public event System.Action<float, float> OnExperienceChanged;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -23,6 +25,10 @@ public class PlayerStats : CharacterStats
 
     void Update()
     {
+        if (OnExperienceChanged != null)
+        {
+            OnExperienceChanged(maxExperience, experience);
+        }
         //if experience is greater than max experience
         if (experience >= maxExperience)
         {
@@ -30,6 +36,7 @@ public class PlayerStats : CharacterStats
             experience -= maxExperience;
             //increase max experience by 10
             maxExperience += 10;
+
             //increase level by 1
             LevelUp();
         }

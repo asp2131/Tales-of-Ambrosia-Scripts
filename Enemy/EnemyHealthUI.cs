@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(CharacterStats))]
-public class HealthUI : MonoBehaviour
+public class EnemyHealthUI : MonoBehaviour
 {
     public GameObject uiPrefab;
     public Transform target;
