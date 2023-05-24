@@ -46,11 +46,7 @@ public class CharacterAnimator : MonoBehaviour
         //     animator.SetBool("Jumping", !jump.groundPlayer);
         // }
 
-        //if k key is pressed, trigger the attack animation
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            SlingShotAnimation();
-        }
+
 
         animator.SetFloat("Speed", agent.speed, locomationAnimationSmoothTime, Time.deltaTime);
     }
