@@ -10,6 +10,8 @@ public class HealthUI : MonoBehaviour
     Transform ui;
     Image healthSlider;
 
+    float lastHealthLossAmount;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -24,9 +26,20 @@ public class HealthUI : MonoBehaviour
         float healthPercent = (float)currentHealth / maxHealth;
         float heartMultiplier = 4f;
         float healthLoss = 1f - healthPercent;
+        lastHealthLossAmount = healthLoss;
 
         //if health is full, set health slider to 1
-
+        if (healthPercent == 1f)
+        {
+            for (int i = 0; i < uiPrefab.transform.childCount; i++)
+            {
+                healthSlider = uiPrefab.transform.GetChild(i).GetComponent<Image>();
+                if (healthSlider.fillAmount != 1f)
+                {
+                    healthSlider.fillAmount += 5f;
+                }
+            }
+        }
 
         //create heart health system with uiPrefab's children
         for (int i = uiPrefab.transform.childCount - 1; i >= 0; i--)
