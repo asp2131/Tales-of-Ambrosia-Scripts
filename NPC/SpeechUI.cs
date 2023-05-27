@@ -8,6 +8,8 @@ public class SpeechUI : MonoBehaviour
     public GameObject speechBubblePrefab;
     public Transform target;
 
+    private Guide guide;
+
     Transform player;
 
     public float lookRadius = 5f; // Detection range for player
@@ -20,6 +22,7 @@ public class SpeechUI : MonoBehaviour
     void Start()
     {
         player = PlayerManager.instance.player.transform;
+        guide = GetComponent<Guide>();
         foreach (Canvas canvas in FindObjectsOfType<Canvas>())
         {
             print("1");
@@ -42,9 +45,9 @@ public class SpeechUI : MonoBehaviour
         }
         float distance = Vector3.Distance(target.position, player.position);
         // If inside the lookRadius
-        if (distance <= lookRadius)
+        if (distance <= lookRadius && guide.isFocus != true)
         {
-            print("in range");
+            // print("in range");
             ui.gameObject.SetActive(true);
         }
         else

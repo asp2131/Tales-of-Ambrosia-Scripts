@@ -5,12 +5,12 @@ public class CharacterStats : MonoBehaviour
     public float maxHealth = 100f;
     public float currentHealth;
 
-    public float regenerationDelay = 7f;
-    public float regenerationRate = 10f;
+    public float regenerationDelay = 17f;
+    public float regenerationRate = 5f;
     public Stat damage;
     public Stat armor;
 
-    float lastDamageTime;
+    public float lastDamageTime;
 
     public event System.Action<float, float> OnHealthChanged;
 
@@ -29,10 +29,7 @@ public class CharacterStats : MonoBehaviour
     void Update()
     {
         //if health hasn't changed in 7 seconds, then regenerate health
-        if (Time.time - lastDamageTime > regenerationDelay)
-        {
-            RegenerateHealth();
-        }
+
 
         //if k is pressed
         if (Input.GetKeyDown(KeyCode.F))
@@ -59,6 +56,7 @@ public class CharacterStats : MonoBehaviour
     {
         currentHealth += regenerationRate * Time.deltaTime;
         currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
+        OnHealthChanged(maxHealth, currentHealth);
     }
 
     public virtual void TakeDamage(int damage)
@@ -67,6 +65,7 @@ public class CharacterStats : MonoBehaviour
         damage = Mathf.Clamp(damage, 0, int.MaxValue);
 
         currentHealth -= damage;
+        lastDamageTime = Time.time;
         Debug.Log(transform.name + " takes " + damage + " damage.");
         if (OnHealthChanged != null)
         {

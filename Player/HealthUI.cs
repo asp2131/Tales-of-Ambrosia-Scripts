@@ -25,27 +25,23 @@ public class HealthUI : MonoBehaviour
         float heartMultiplier = 4f;
         float healthLoss = 1f - healthPercent;
 
+        //if health is full, set health slider to 1
+
+
         //create heart health system with uiPrefab's children
         for (int i = uiPrefab.transform.childCount - 1; i >= 0; i--)
         {
-            //access last child of uiPrefab
             healthSlider = uiPrefab.transform.GetChild(i).GetComponent<Image>();
-            // print(healthSlider);
-            // print(healthSlider.fillAmount);
-            // print(healthLoss);
-            // print(healthLoss * heartMultiplier);
-            // print(healthSlider.fillAmount - healthLoss * heartMultiplier);
+
             if (healthLoss <= 1f / uiPrefab.transform.childCount)
             {
                 healthSlider.fillAmount = healthSlider.fillAmount - healthLoss * heartMultiplier;
-                // print(healthSlider.fillAmount);
                 break;
             }
             else
             {
                 healthSlider.fillAmount = 0f;
                 healthLoss = healthLoss - 1f / uiPrefab.transform.childCount;
-                // print(healthSlider.fillAmount);
             }
         }
     }

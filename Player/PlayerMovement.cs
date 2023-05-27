@@ -87,9 +87,10 @@ public class PlayerMovement : MonoBehaviour
             }
         }
         //if target is out of range, stop following
-        if (target != null && Vector3.Distance(transform.position, target.position) > 8f)
+        if (target != null && Vector3.Distance(transform.position, target.position) > 5f)
         {
             target = null;
+            RemoveFocus();
         }
         if (target != null)
         {
@@ -181,6 +182,14 @@ public class PlayerMovement : MonoBehaviour
         focus = newFocus;
         newFocus.OnFocused(transform);
         FollowTarget(newFocus);
+    }
+
+    void RemoveFocus()
+    {
+        if (focus != null)
+            focus.OnDefocused();
+
+        focus = null;
     }
 
     private void FootstepEffect()

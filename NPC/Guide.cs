@@ -7,11 +7,18 @@ public class Guide : Interactable
     // Start is called before the first frame update
     Transform target; // Reference to the player
 
+    DialogManager dialogManager;
+
     public float lookRadius = 5f; // Detection range for player
+
+    public string[] dialog = new string[2];
+
+    public Quest quest;
 
     void Start()
     {
         target = PlayerManager.instance.player.transform;
+        dialogManager = DialogManager.instance;
     }
 
     // Update is called once per frame
@@ -22,6 +29,15 @@ public class Guide : Interactable
         if (distance <= lookRadius)
         {
             FaceTarget(); // Make sure to face towards the target
+        }
+
+        if (isFocus == true)
+        {
+            StartConversation();
+        }
+        else
+        {
+            dialogManager.dialogIndex = 0;
         }
     }
 
@@ -34,5 +50,18 @@ public class Guide : Interactable
             lookRotation,
             Time.deltaTime * 5f
         );
+    }
+
+    void StartConversation()
+    {
+        //if player is interacting with NPC
+        //display dialogue
+        //create string array of dialogue
+
+
+        //pass string array to dialogManager
+
+
+        dialogManager.ShowDialog(transform.name, dialog);
     }
 }

@@ -40,6 +40,11 @@ public class PlayerStats : CharacterStats
             //increase level by 1
             LevelUp();
         }
+
+        if (Time.time - lastDamageTime > regenerationDelay)
+        {
+            RegenerateHealth();
+        }
     }
 
     public void LevelUp()
